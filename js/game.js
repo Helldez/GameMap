@@ -22,24 +22,24 @@ let player;
 let cursors;
 
 function preload() {
-    // Carichiamo la mappa predefinita e il tileset
-    this.load.tilemapTiledJSON('map', 'https://examples.phaser.io/assets/tilemaps/maps/desert.json');
-    this.load.image('tiles', 'https://examples.phaser.io/assets/tilemaps/tiles/tmw_desert_spacing.png');
-    
-    // Carichiamo uno sprite predefinito per il personaggio
-    this.load.spritesheet('player', 'https://examples.phaser.io/assets/sprites/phaser-dude.png', { frameWidth: 32, frameHeight: 48 });
+    // Load a Phaser 3 compatible tilemap and tileset image
+    this.load.tilemapTiledJSON('map', 'https://labs.phaser.io/assets/tilemaps/maps/simple-map.json');
+    this.load.image('tiles', 'https://labs.phaser.io/assets/tilemaps/tiles/simple_tileset.png');
+
+    // Load a Phaser 3 compatible player sprite
+    this.load.spritesheet('player', 'https://labs.phaser.io/assets/sprites/phaser-dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
-    // Creiamo la mappa
+    // Create the map
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('Desert', 'tiles');
-    const layer = map.createLayer('Ground', tileset, 0, 0);
+    const tileset = map.addTilesetImage('simple_tileset', 'tiles');
+    const layer = map.createLayer('background', tileset, 0, 0);
 
-    // Aggiungiamo il personaggio
+    // Add the player sprite
     player = this.physics.add.sprite(100, 150, 'player');
 
-    // Anima il personaggio
+    // Set up player animations
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -58,31 +58,35 @@ function create() {
         repeat: -1
     });
 
-    // Imposta i controlli della tastiera
+    // Set up keyboard controls
     cursors = this.input.keyboard.createCursorKeys();
+
+    // Set camera to follow the player
+    this.cameras.main.startFollow(player);
 }
 
 function update() {
-    // Resetta la velocità
+    // Reset player velocity
     player.setVelocity(0);
 
-    // Controlla l'input e muovi il personaggio
+    // Horizontal movement
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
-    }
-    else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown) {
         player.setVelocityX(160);
         player.anims.play('right', true);
     }
-    else if (cursors.up.isDown) {
+
+    // Vertical movement
+    if (cursors.up.isDown) {
         player.setVelocityY(-160);
-        player.anims.play('turn');
-    }
-    else if (cursors.down.isDown) {
+    } else if (cursors.down.isDown) {
         player.setVelocityY(160);
-        player.anims.play('turn');
-    } else {
+    }
+
+    // If no movement, play idle animation
+    if (!cursors.left.isDown && !cursors.right.isDown && !cursors.up.isDown && !cursors.down.isDown) {
         player.anims.play('turn');
     }
 }
