@@ -8,6 +8,29 @@
     <!-- Your game content -->
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script src="js/game.js"></script>
+
+    <div id="phaser-game"></div>
+    <div id="debug-output"></div>
+    <script>
+        function logToScreen(message) {
+            var debugOutput = document.getElementById('debug-output');
+            debugOutput.innerHTML += message + '<br>';
+        }
+
+        // Sostituisci console.log con una funzione che scrive sia nella console che sullo schermo
+        var originalLog = console.log;
+        console.log = function() {
+            originalLog.apply(console, arguments);
+            logToScreen(Array.prototype.slice.call(arguments).join(' '));
+        }
+
+        // Fai lo stesso per console.error
+        var originalError = console.error;
+        console.error = function() {
+            originalError.apply(console, arguments);
+            logToScreen('ERROR: ' + Array.prototype.slice.call(arguments).join(' '));
+        }
+</script>
 </body>
 </html>
 

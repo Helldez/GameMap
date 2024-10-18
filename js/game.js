@@ -6,7 +6,7 @@ const config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true  // Imposta a true per vedere i confini di collisione
+            debug: true  // Mostra i confini di collisione
         }
     },
     scene: {
@@ -25,19 +25,29 @@ let tileset;
 let layer;
 
 function preload() {
+    console.log('Preload function called');
     this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json');
     this.load.image('tiles', 'assets/tilesets/tileset.png');
     this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
-    map = this.make.tilemap({ key: 'map' });
-    tileset = map.addTilesetImage('tileset', 'tiles');
-    layer = map.createLayer('Livello1', tileset, 0, 0);
+    console.log('Create function called');
     
-    layer.setCollisionByExclusion([0]);  // Imposta collisione per tutti i tile tranne 0
-
+    map = this.make.tilemap({ key: 'map' });
+    console.log('Map created:', map);
+    
+    tileset = map.addTilesetImage('tileset', 'tiles');
+    console.log('Tileset added:', tileset);
+    
+    layer = map.createLayer('Livello1', tileset, 0, 0);
+    console.log('Layer created:', layer);
+    
+    layer.setCollisionByExclusion([0]);
+    
     player = this.physics.add.sprite(48, 48, 'player');
+    console.log('Player created:', player);
+    
     player.setCollideWorldBounds(true);
 
     this.physics.add.collider(player, layer);
@@ -53,6 +63,9 @@ function create() {
 
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(player);
+
+    // Aggiungi un testo di debug
+    this.debugText = this.add.text(10, 10, 'Debug Info', { fontSize: '16px', fill: '#ffffff' });
 }
 
 function update() {
@@ -75,4 +88,18 @@ function update() {
     } else {
         player.anims.stop();
     }
+
+    // Aggiorna il testo di debug
+    this.debugText.setText(`
+        Player X: ${Math.round(player.x)}
+        Player Y: ${Math.round(player.y)}
+        Velocity X: ${Math.round(player.body.velocity.x)}
+        Velocity Y: ${Math.round(player.body.velocity.y)}
+    `);
 }
+
+// Aggiungi un listener per gli errori
+window.addEventListener('error', function(e) {
+    console.error('Runtime error:', e.message);
+    console.error('Stack:', e.error.stack);
+});
