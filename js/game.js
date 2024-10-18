@@ -1,12 +1,12 @@
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 320,
+    height: 320,
     parent: null,
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: true  // Imposta a true per vedere i confini di collisione
         }
     },
     scene: {
@@ -34,8 +34,11 @@ function create() {
     map = this.make.tilemap({ key: 'map' });
     tileset = map.addTilesetImage('tileset', 'tiles');
     layer = map.createLayer('Livello1', tileset, 0, 0);
+    
+    layer.setCollisionByExclusion([0]);  // Imposta collisione per tutti i tile tranne 0
 
-    player = this.physics.add.sprite(100, 100, 'player');
+    player = this.physics.add.sprite(48, 48, 'player');
+    player.setCollideWorldBounds(true);
 
     this.physics.add.collider(player, layer);
 
@@ -48,7 +51,8 @@ function create() {
         repeat: -1
     });
 
-    layer.setCollisionByProperty({ collides: true });
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.startFollow(player);
 }
 
 function update() {
