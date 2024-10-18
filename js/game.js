@@ -3,17 +3,18 @@ const config = {
     width: 320,
     height: 320,
     parent: 'phaser-game',
-    physics: {
-        default: 'arcade',
-        arcade: {
-            debug: true,
-            gravity: { y: 0 }
-        }
-    },
+    backgroundColor: '#2d2d2d',
     scene: {
         preload: preload,
         create: create,
         update: update
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: true
+        }
     }
 };
 
@@ -26,38 +27,32 @@ let tileset;
 let layer;
 
 function preload() {
-    console.log('Preload function called');
-    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json');
     this.load.image('tiles', 'assets/tilesets/tileset.png');
+    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json');
     this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
-    console.log('Create function called');
-
-    console.log('Tileset loaded:', this.textures.exists('tiles'));
-    console.log('Player sprite loaded:', this.textures.exists('player'));
-    console.log('Map data:', this.cache.json.get('map'));
-
+    // Crea la mappa
     map = this.make.tilemap({ key: 'map' });
-    console.log('Map created:', map);
-
+    
+    // Aggiungi il tileset alla mappa
     tileset = map.addTilesetImage('tileset', 'tiles');
-    console.log('Tileset added:', tileset);
-
+    
+    // Crea il layer
     layer = map.createLayer('Livello1', tileset, 0, 0);
-    console.log('Layer created:', layer);
-
+    
+    // Imposta le collisioni
     layer.setCollisionByExclusion([0]);
 
+    // Crea il player
     player = this.physics.add.sprite(160, 160, 'player');
     player.setCollideWorldBounds(true);
-    console.log('Player created:', player);
 
+    // Aggiungi collisione tra player e layer
     this.physics.add.collider(player, layer);
 
-    cursors = this.input.keyboard.createCursorKeys();
-
+    // Crea l'animazione del player
     this.anims.create({
         key: 'cammina',
         frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -65,18 +60,19 @@ function create() {
         repeat: -1
     });
 
+    // Imposta la camera
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(player);
 
+    // Crea i controlli
+    cursors = this.input.keyboard.createCursorKeys();
+
+    // Aggiungi testo di debug
     this.debugText = this.add.text(10, 10, 'Debug Info', { fontSize: '16px', fill: '#ffffff' });
-
-    console.log('Canvas size:', this.sys.game.canvas.width, 'x', this.sys.game.canvas.height);
-
-    // Aggiungi un rettangolo di debug per verificare il rendering
-    this.add.rectangle(0, 0, 320, 320, 0xff0000, 0.2).setOrigin(0, 0);
 }
 
 function update() {
+    // Movimento del player
     player.body.setVelocity(0);
 
     if (cursors.left.isDown) {
@@ -87,16 +83,21 @@ function update() {
         player.body.setVelocityX(100);
         player.anims.play('cammina', true);
         player.flipX = false;
-    } else if (cursors.up.isDown) {
+    }
+
+    if (cursors.up.isDown) {
         player.body.setVelocityY(-100);
         player.anims.play('cammina', true);
     } else if (cursors.down.isDown) {
         player.body.setVelocityY(100);
         player.anims.play('cammina', true);
-    } else {
+    }
+
+    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
         player.anims.stop();
     }
 
+    // Aggiorna il testo di debug
     this.debugText.setText(`
         Player X: ${Math.round(player.x)}
         Player Y: ${Math.round(player.y)}
