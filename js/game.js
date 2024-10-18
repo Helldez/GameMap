@@ -1,20 +1,18 @@
 const config = {
     type: Phaser.AUTO,
-    width: 336,
-    height: 672,
-    pixelArt: true,
-    backgroundColor: '#2d2d2d',
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    },
+    width: 800,
+    height: 600,
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
             debug: true
         }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
     }
 };
 
@@ -22,107 +20,96 @@ const game = new Phaser.Game(config);
 
 let player;
 let cursors;
-let map;
-let groundLayer;
-let objectLayer;
 let debugText;
 
 function preload() {
-    console.log('Preload started');
-    this.load.tilemapTiledXML('map', 'assets/maps/map1.tmx');
-    this.load.image('tiles', 'assets/tilesets/grass_biome.png');
-    this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 16, frameHeight: 16 });
-    console.log('Preload completed');
+    // Carica tileset standard di Phaser
+    this.load.image('tiles', 'https://labs.phaser.io/assets/tilemaps/tiles/dungeon-16-16.png');
+    
+    // Carica una mappa JSON semplice
+    this.load.tilemapTiledJSON('map', 'https://labs.phaser.io/assets/tilemaps/maps/dungeon-16-16.json');
+    
+    // Carica sprite del player standard
+    this.load.spritesheet('player', 'https://labs.phaser.io/assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
-    console.log('Create function started');
-
-    // Create debug text
-    debugText = this.add.text(10, 10, 'Debug Info', { fontSize: '16px', fill: '#ffffff' });
-
-    try {
-        // Create map
-        map = this.make.tilemap({ key: 'map' });
-        console.log('Map created:', map);
-
-        // Add tileset
-        const tileset = map.addTilesetImage('grass_biome', 'tiles');
-        console.log('Tileset added:', tileset);
-
-        // Create layers
-        groundLayer = map.createLayer('Kachelebene 1', tileset, 0, 0);
-        objectLayer = map.createLayer('Tile Layer 2', tileset, 0, 0);
-        console.log('Layers created:', groundLayer, objectLayer);
-
-        // Set collisions (adjust as needed)
-        groundLayer.setCollisionByProperty({ collides: true });
-
-        // Create player
-        player = this.physics.add.sprite(100, 100, 'player');
-        player.setCollideWorldBounds(true);
-        console.log('Player created:', player);
-
-        // Add collision between player and groundLayer
-        this.physics.add.collider(player, groundLayer);
-
-        // Create player animations
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        });
-
-        // Set up camera
-        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        this.cameras.main.startFollow(player);
-
-        // Set up controls
-        cursors = this.input.keyboard.createCursorKeys();
-
-        console.log('Create function completed successfully');
-    } catch (error) {
-        console.error('Error in create function:', error);
-        debugText.setText('Error: ' + error.message);
-    }
-
-    // Add a simple shape for debug
-    this.add.rectangle(168, 336, 50, 50, 0xff0000);
+    // Crea la mappa
+    const map = this.make.tilemap({ key: 'map' });
+    
+    // Aggiungi il tileset alla mappa
+    const tileset = map.addTilesetImage('dungeon', 'tiles');
+    
+    // Crea i layer
+    const groundLayer = map.createLayer('Ground', tileset);
+    const wallsLayer = map.createLayer('Walls', tileset);
+    
+    // Imposta le collisioni per il layer delle mura
+    wallsLayer.setCollisionByProperty({ collides: true });
+    
+    // Crea il player
+    player = this.physics.add.sprite(100, 100, 'player');
+    player.setCollideWorldBounds(true);
+    
+    // Aggiungi collisione tra player e wallsLayer
+    this.physics.add.collider(player, wallsLayer);
+    
+    // Crea le animazioni del player
+    this.anims.create({
+        key: 'left',
+        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'turn',
+        frames: [ { key: 'player', frame: 4 } ],
+        frameRate: 20
+    });
+    this.anims.create({
+        key: 'right',
+        frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    
+    // Imposta la camera per seguire il player
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    this.cameras.main.startFollow(player);
+    
+    // Crea i controlli
+    cursors = this.input.keyboard.createCursorKeys();
+    
+    // Testo di debug
+    debugText = this.add.text(16, 16, 'Debug info', { fontSize: '18px', fill: '#ffffff' });
+    debugText.setScrollFactor(0);
 }
 
 function update() {
-    if (!player) return;
-
-    const speed = 100;
+    // Movimento del player
+    const speed = 160;
     player.body.setVelocity(0);
 
     if (cursors.left.isDown) {
         player.body.setVelocityX(-speed);
-        player.anims.play('walk', true);
-        player.flipX = true;
+        player.anims.play('left', true);
     } else if (cursors.right.isDown) {
         player.body.setVelocityX(speed);
-        player.anims.play('walk', true);
-        player.flipX = false;
+        player.anims.play('right', true);
+    } else {
+        player.anims.play('turn');
     }
 
     if (cursors.up.isDown) {
         player.body.setVelocityY(-speed);
-        player.anims.play('walk', true);
     } else if (cursors.down.isDown) {
         player.body.setVelocityY(speed);
-        player.anims.play('walk', true);
     }
 
-    if (player.body.velocity.x === 0 && player.body.velocity.y === 0) {
-        player.anims.stop();
-    }
-
-    // Update debug text
+    // Aggiorna il testo di debug
     debugText.setText(`
         Player X: ${Math.round(player.x)}
         Player Y: ${Math.round(player.y)}
-        FPS: ${Math.round(this.game.loop.actualFps)}
+        FPS: ${Math.round(game.loop.actualFps)}
     `);
 }
