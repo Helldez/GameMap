@@ -14,7 +14,6 @@
                     1, 2, 2, 2, 2, 2, 2, 2, 2, 1,
                     1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             "height":10,
-            "id":1,
             "name":"Livello1",
             "opacity":1,
             "type":"tilelayer",
@@ -34,7 +33,7 @@
         {
             "columns":8,
             "firstgid":1,
-            "image":"..\/tilesets\/tileset.png",
+            "image":"tileset.png",
             "imageheight":64,
             "imagewidth":256,
             "margin":0,
