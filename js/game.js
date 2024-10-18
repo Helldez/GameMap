@@ -1,3 +1,4 @@
+// game.js
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -22,24 +23,24 @@ let player;
 let cursors;
 
 function preload() {
-    // Load tilemap and tileset from accessible URLs
-    this.load.tilemapTiledJSON('map', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/tilemaps/maps/simple-map.json');
-    this.load.image('tiles', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/tilemaps/tiles/simple_tileset.png');
-
-    // Load player sprite
-    this.load.spritesheet('player', 'https://cdn.jsdelivr.net/gh/photonstorm/phaser3-examples@master/public/assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
+    // Carichiamo una mappa e un tileset alternativi
+    this.load.tilemapTiledJSON('map', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/tilemaps/maps/super-mario.json');
+    this.load.image('tiles', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/tilemaps/tiles/super-mario.png');
+    
+    // Carichiamo uno sprite alternativo per il personaggio
+    this.load.spritesheet('player', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
-    // Create the map
+    // Creiamo la mappa
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('simple_tileset', 'tiles');
-    const layer = map.createLayer('background', tileset, 0, 0);
-
-    // Add the player sprite
+    const tileset = map.addTilesetImage('SuperMarioBros-World1-1', 'tiles');
+    const layer = map.createLayer('World1', tileset, 0, 0);
+    
+    // Aggiungiamo il personaggio
     player = this.physics.add.sprite(100, 150, 'player');
-
-    // Set up player animations
+    
+    // Anima il personaggio
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -57,38 +58,32 @@ function create() {
         frameRate: 10,
         repeat: -1
     });
-
-    // Set up keyboard controls
+    
+    // Imposta i controlli della tastiera
     cursors = this.input.keyboard.createCursorKeys();
-
-    // Set camera to follow the player
-    this.cameras.main.startFollow(player);
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 }
 
 function update() {
-    // Reset player velocity
+    // Resetta la velocità
     player.setVelocity(0);
-
-    // Horizontal movement
+    
+    // Controlla l'input e muovi il personaggio
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
-    } else if (cursors.right.isDown) {
+    }
+    else if (cursors.right.isDown) {
         player.setVelocityX(160);
         player.anims.play('right', true);
     }
-
-    // Vertical movement
-    if (cursors.up.isDown) {
+    else if (cursors.up.isDown) {
         player.setVelocityY(-160);
-    } else if (cursors.down.isDown) {
-        player.setVelocityY(160);
+        player.anims.play('turn');
     }
-
-    // If not moving horizontally, play idle animation
-    if (!cursors.left.isDown && !cursors.right.isDown) {
+    else if (cursors.down.isDown) {
+        player.setVelocityY(160);
+        player.anims.play('turn');
+    } else {
         player.anims.play('turn');
     }
 }
-

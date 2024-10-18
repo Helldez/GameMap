@@ -2,24 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phaser Tilemap Game</title>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="game.js" defer></script>
     <style>
         body {
             margin: 0;
-            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
         }
-        #game-container {
-            width: 800px;
-            height: 600px;
-            margin: 0 auto;
-            display: block;
+        canvas {
+            border: 2px solid #333;
         }
     </style>
 </head>
 <body>
-    <div id="game-container"></div>
 </body>
 </html>
-
