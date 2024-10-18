@@ -1,12 +1,12 @@
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.CANVAS,  // Cambiato da AUTO a CANVAS per debugging
     width: 320,
     height: 320,
-    parent: null,
+    parent: 'phaser-game',
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true  // Mostra i confini di collisione
+            debug: true
         }
     },
     scene: {
@@ -26,13 +26,20 @@ let layer;
 
 function preload() {
     console.log('Preload function called');
-    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json');
-    this.load.image('tiles', 'assets/tilesets/tileset.png');
-    this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json')
+        .on('filecomplete', () => console.log('mappa.json caricato'))
+        .on('loaderror', () => console.error('Errore nel caricamento di mappa.json'));
+    this.load.image('tiles', 'assets/tilesets/tileset.png')
+        .on('filecomplete', () => console.log('tileset.png caricato'))
+        .on('loaderror', () => console.error('Errore nel caricamento di tileset.png'));
+    this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 })
+        .on('filecomplete', () => console.log('player.png caricato'))
+        .on('loaderror', () => console.error('Errore nel caricamento di player.png'));
 }
 
 function create() {
     console.log('Create function called');
+    this.add.rectangle(0, 0, 320, 320, 0xff0000).setOrigin(0, 0);
     
     map = this.make.tilemap({ key: 'map' });
     console.log('Map created:', map);
@@ -64,8 +71,9 @@ function create() {
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
     this.cameras.main.startFollow(player);
 
-    // Aggiungi un testo di debug
     this.debugText = this.add.text(10, 10, 'Debug Info', { fontSize: '16px', fill: '#ffffff' });
+
+    console.log('Canvas size:', this.sys.game.canvas.width, 'x', this.sys.game.canvas.height);
 }
 
 function update() {
@@ -89,7 +97,6 @@ function update() {
         player.anims.stop();
     }
 
-    // Aggiorna il testo di debug
     this.debugText.setText(`
         Player X: ${Math.round(player.x)}
         Player Y: ${Math.round(player.y)}
@@ -98,7 +105,6 @@ function update() {
     `);
 }
 
-// Aggiungi un listener per gli errori
 window.addEventListener('error', function(e) {
     console.error('Runtime error:', e.message);
     console.error('Stack:', e.error.stack);
