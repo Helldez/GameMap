@@ -37,11 +37,10 @@ function create() {
 
     console.log('Tileset loaded:', this.textures.exists('tiles'));
     console.log('Player sprite loaded:', this.textures.exists('player'));
+    console.log('Map data:', this.cache.json.get('map'));
 
     map = this.make.tilemap({ key: 'map' });
     console.log('Map created:', map);
-    console.log('Map dimensions:', map.width, 'x', map.height, 'tiles');
-    console.log('Tile dimensions:', map.tileWidth, 'x', map.tileHeight, 'pixels');
 
     tileset = map.addTilesetImage('tileset', 'tiles');
     console.log('Tileset added:', tileset);
@@ -52,9 +51,8 @@ function create() {
     layer.setCollisionByExclusion([0]);
 
     player = this.physics.add.sprite(160, 160, 'player');
-    console.log('Player created:', player);
-
     player.setCollideWorldBounds(true);
+    console.log('Player created:', player);
 
     this.physics.add.collider(player, layer);
 
@@ -74,8 +72,8 @@ function create() {
 
     console.log('Canvas size:', this.sys.game.canvas.width, 'x', this.sys.game.canvas.height);
 
-    this.add.rectangle(0, 0, 320, 320, 0x00ff00, 0.3).setOrigin(0, 0);
-    this.add.text(10, 290, 'Game Loaded', { fill: '#ffffff' });
+    // Aggiungi un rettangolo di debug per verificare il rendering
+    this.add.rectangle(0, 0, 320, 320, 0xff0000, 0.2).setOrigin(0, 0);
 }
 
 function update() {
