@@ -1,12 +1,13 @@
 const config = {
-    type: Phaser.CANVAS,  // Cambiato da AUTO a CANVAS per debugging
+    type: Phaser.AUTO,
     width: 320,
     height: 320,
     parent: 'phaser-game',
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: true,
+            gravity: { y: 0 }
         }
     },
     scene: {
@@ -26,35 +27,33 @@ let layer;
 
 function preload() {
     console.log('Preload function called');
-    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json')
-        .on('filecomplete', () => console.log('mappa.json caricato'))
-        .on('loaderror', () => console.error('Errore nel caricamento di mappa.json'));
-    this.load.image('tiles', 'assets/tilesets/tileset.png')
-        .on('filecomplete', () => console.log('tileset.png caricato'))
-        .on('loaderror', () => console.error('Errore nel caricamento di tileset.png'));
-    this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 })
-        .on('filecomplete', () => console.log('player.png caricato'))
-        .on('loaderror', () => console.error('Errore nel caricamento di player.png'));
+    this.load.tilemapTiledJSON('map', 'assets/maps/mappa.json');
+    this.load.image('tiles', 'assets/tilesets/tileset.png');
+    this.load.spritesheet('player', 'assets/sprites/player.png', { frameWidth: 32, frameHeight: 48 });
 }
 
 function create() {
     console.log('Create function called');
-    this.add.rectangle(0, 0, 320, 320, 0xff0000).setOrigin(0, 0);
-    
+
+    console.log('Tileset loaded:', this.textures.exists('tiles'));
+    console.log('Player sprite loaded:', this.textures.exists('player'));
+
     map = this.make.tilemap({ key: 'map' });
     console.log('Map created:', map);
-    
+    console.log('Map dimensions:', map.width, 'x', map.height, 'tiles');
+    console.log('Tile dimensions:', map.tileWidth, 'x', map.tileHeight, 'pixels');
+
     tileset = map.addTilesetImage('tileset', 'tiles');
     console.log('Tileset added:', tileset);
-    
+
     layer = map.createLayer('Livello1', tileset, 0, 0);
     console.log('Layer created:', layer);
-    
+
     layer.setCollisionByExclusion([0]);
-    
-    player = this.physics.add.sprite(48, 48, 'player');
+
+    player = this.physics.add.sprite(160, 160, 'player');
     console.log('Player created:', player);
-    
+
     player.setCollideWorldBounds(true);
 
     this.physics.add.collider(player, layer);
@@ -74,6 +73,9 @@ function create() {
     this.debugText = this.add.text(10, 10, 'Debug Info', { fontSize: '16px', fill: '#ffffff' });
 
     console.log('Canvas size:', this.sys.game.canvas.width, 'x', this.sys.game.canvas.height);
+
+    this.add.rectangle(0, 0, 320, 320, 0x00ff00, 0.3).setOrigin(0, 0);
+    this.add.text(10, 290, 'Game Loaded', { fill: '#ffffff' });
 }
 
 function update() {
@@ -104,8 +106,3 @@ function update() {
         Velocity Y: ${Math.round(player.body.velocity.y)}
     `);
 }
-
-window.addEventListener('error', function(e) {
-    console.error('Runtime error:', e.message);
-    console.error('Stack:', e.error.stack);
-});
