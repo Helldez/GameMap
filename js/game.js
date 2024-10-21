@@ -24,17 +24,17 @@ let cursors;
 function preload() {
     // Carica la mappa e il tileset aggiornato
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json'); // Sostituisci con il percorso del tuo file JSON
-    this.load.image('tiles', 'assets/tilesets/tileset2.png'); // Sostituisci con il percorso del tileset aggiornato
+    this.load.image('tiles', 'assets/tilesets/tileset3.png'); // Sostituisci con il percorso del tileset aggiornato
 
     // Carica lo sprite aggiornato del personaggio
-    this.load.spritesheet('player', 'assets/sprites/player2.png', { frameWidth: 32, frameHeight: 48 }); // Dimensioni dello sprite
+    this.load.spritesheet('player', 'assets/sprites/player3.png', { frameWidth: 32, frameHeight: 48 }); // Dimensioni dello sprite
 }
 
 function create() {
     // Creazione della mappa
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('tileset2', 'tiles'); // Nome deve corrispondere a quello del JSON
-    const layer = map.createLayer('Tile Layer 1', tileset, 0, 0); // Assicurati che il nome del layer corrisponda a quello nel JSON
+    const tileset = map.addTilesetImage('tileset', 'tiles'); // Nome deve corrispondere a quello del JSON
+    const layer = map.createLayer('Terrain', tileset, 0, 0); // Assicurati che il nome del layer corrisponda a quello nel JSON
 
     // Aggiunta del personaggio
     player = this.physics.add.sprite(100, 150, 'player');
@@ -86,4 +86,5 @@ function update() {
         player.anims.play('turn');
     }
 };
+
 
