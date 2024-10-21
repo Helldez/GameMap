@@ -7,7 +7,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false // Impostato su false per la produzione
+            debug: false
         }
     },
     scene: {
@@ -24,13 +24,25 @@ let cursors;
 
 function preload() {
     console.log('Preload function started');
+
     this.load.on('complete', () => console.log('All assets loaded'));
 
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
+    this.load.on('filecomplete-tilemapJSON-map', function() {
+        console.log('Map JSON loaded successfully');
+    });
+
     this.load.image('tiles', 'assets/tilesets/tileset3.png');
+    this.load.on('filecomplete-image-tiles', function() {
+        console.log('Tileset image loaded successfully');
+    });
+
     this.load.spritesheet('player', 'assets/sprites/player3.png', { 
         frameWidth: 16, 
         frameHeight: 24 
+    });
+    this.load.on('filecomplete-spritesheet-player', function() {
+        console.log('Player spritesheet loaded successfully');
     });
 }
 
@@ -40,43 +52,72 @@ function create() {
     console.log('Canvas size:', this.sys.game.canvas.width, this.sys.game.canvas.height);
 
     this.cameras.main.setBackgroundColor('#FFFFFF');
+    console.log('Background color set to white');
 
-    const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('tileset3', 'tiles');
-    const layer = map.createLayer('Terrain', tileset, 0, 0);
-    console.log('Layer created:', layer);
+    try {
+        const map = this.make.tilemap({ key: 'map' });
+        console.log('Tilemap created');
+        
+        const tileset = map.addTilesetImage('tileset3', 'tiles');
+        console.log('Tileset added to map');
+        
+        const layer = map.createLayer('Terrain', tileset, 0, 0);
+        console.log('Layer created:', layer);
+    } catch (error) {
+        console.error('Error creating map:', error);
+    }
 
-    player = this.physics.add.sprite(100, 150, 'player');
-    player.setScale(2);
-    console.log('Player position:', player.x, player.y);
+    try {
+        player = this.physics.add.sprite(100, 150, 'player');
+        player.setScale(2);
+        console.log('Player created:', player);
 
-    this.anims.create({
-        key: 'left',
-        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-        frameRate: 10,
-        repeat: -1
-    });
-    this.anims.create({
-        key: 'turn',
-        frames: [{ key: 'player', frame: 4 }],
-        frameRate: 20
-    });
-    this.anims.create({
-        key: 'right',
-        frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-        frameRate: 10,
-        repeat: -1
-    });
+        player.setCollideWorldBounds(true);
+        console.log('Player collision with world bounds set');
+
+        this.anims.create({
+            key: 'left',
+            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        this.anims.create({
+            key: 'turn',
+            frames: [{ key: 'player', frame: 4 }],
+            frameRate: 20
+        });
+        this.anims.create({
+            key: 'right',
+            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        console.log('Player animations created');
+    } catch (error) {
+        console.error('Error setting up player:', error);
+    }
 
     cursors = this.input.keyboard.createCursorKeys();
-    player.setCollideWorldBounds(true);
+    console.log('Cursor keys created');
 
     // Aggiungi un rettangolo rosso per test
     this.add.rectangle(400, 300, 100, 100, 0xFF0000);
+    console.log('Red rectangle added for testing');
+
+    // Aggiungi del testo per ulteriore conferma visiva
+    this.add.text(400, 200, 'Hello Phaser!', { fill: '#000000' }).setOrigin(0.5);
+    console.log('Test text added');
+
+    console.log('Create function completed');
 }
 
 function update() {
     console.log('Update called');
+
+    if (!player) {
+        console.warn('Player not initialized in update');
+        return;
+    }
 
     player.setVelocity(0);
 
@@ -96,3 +137,8 @@ function update() {
         player.anims.play('turn');
     }
 }
+
+// Aggiungi un listener per gli errori non catturati
+window.addEventListener('error', function(event) {
+    console.error('Uncaught error:', event.error);
+});
