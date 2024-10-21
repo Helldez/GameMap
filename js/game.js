@@ -7,7 +7,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -24,11 +24,10 @@ let cursors;
 function preload() {
     // Carica la mappa e il tileset aggiornato
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json'); // Sostituisci con il percorso del tuo file JSON
-    this.load.image('tiles', 'assets/tilesets/tileset3.png'); // Sostituisci con il percorso del tileset aggiornato
+    this.load.image('tiles', 'assets/tilesets/tileset3.png'); // Sostituisci con il percorso del tileset aggiornato 
 
     // Carica lo sprite aggiornato del personaggio
-    this.load.spritesheet('player', 'assets/sprites/player3.png', { frameWidth: 32, frameHeight: 48 }); // Dimensioni dello sprite
-}
+    this.load.spritesheet('player', 'assets/sprites/player3.png', { frameWidth: 16, frameHeight: 24 }); // Aggiusta queste dimensioni in base all'immagine reale} /workspaces/GameMap/assets/sprites/player3..png
 
 function create() {
     // Creazione della mappa
