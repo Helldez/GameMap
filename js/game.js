@@ -7,7 +7,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true // Abilita il debug
+            debug: false // Impostato su false per la produzione
         }
     },
     scene: {
@@ -26,11 +26,8 @@ function preload() {
     console.log('Preload function started');
     this.load.on('complete', () => console.log('All assets loaded'));
 
-    // Carica la mappa e il tileset
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
     this.load.image('tiles', 'assets/tilesets/tileset3.png');
-    
-    // Carica lo sprite del personaggio
     this.load.spritesheet('player', 'assets/sprites/player3.png', { 
         frameWidth: 16, 
         frameHeight: 24 
@@ -39,17 +36,20 @@ function preload() {
 
 function create() {
     console.log('Create function started');
+    console.log('Phaser version:', Phaser.VERSION);
+    console.log('Canvas size:', this.sys.game.canvas.width, this.sys.game.canvas.height);
 
-    // Creazione della mappa
+    this.cameras.main.setBackgroundColor('#FFFFFF');
+
     const map = this.make.tilemap({ key: 'map' });
     const tileset = map.addTilesetImage('tileset3', 'tiles');
     const layer = map.createLayer('Terrain', tileset, 0, 0);
+    console.log('Layer created:', layer);
 
-    // Aggiunta del personaggio
     player = this.physics.add.sprite(100, 150, 'player');
-    player.setScale(2); // Scala il player per compensare le dimensioni ridotte
+    player.setScale(2);
+    console.log('Player position:', player.x, player.y);
 
-    // Anima il personaggio
     this.anims.create({
         key: 'left',
         frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
@@ -68,18 +68,18 @@ function create() {
         repeat: -1
     });
 
-    // Imposta i controlli della tastiera
     cursors = this.input.keyboard.createCursorKeys();
-
-    // Aggiungi collisione con i bordi del mondo
     player.setCollideWorldBounds(true);
+
+    // Aggiungi un rettangolo rosso per test
+    this.add.rectangle(400, 300, 100, 100, 0xFF0000);
 }
 
 function update() {
-    // Resetta la velocità
+    console.log('Update called');
+
     player.setVelocity(0);
 
-    // Controlla l'input e muovi il personaggio
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);

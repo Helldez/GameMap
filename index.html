@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phaser Tilemap Game</title>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <!-- ... altri tag head ... -->
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #000;
-        }
-        canvas {
-            border: 2px solid #333;
+        #debugLog {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            padding: 5px;
+            font-family: monospace;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
+    <div id="debugLog"></div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="js/game.js"></script>
+    <script>
+        // Sovrascrive console.log per scrivere anche nel div
+        (function(){
+            var oldLog = console.log;
+            console.log = function(message) {
+                oldLog.apply(console, arguments);
+                var debugLog = document.getElementById('debugLog');
+                debugLog.innerHTML += message + '<br>';
+            };
+        })();
+    </script>
 </body>
 </html>
