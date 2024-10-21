@@ -27,8 +27,8 @@ function preload() {
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
     this.load.image('tiles', 'assets/tilesets/tileset3.png');
     this.load.spritesheet('player', 'assets/sprites/player3.png', { 
-        frameWidth: 16, 
-        frameHeight: 24 
+        frameWidth: 32,  // Modifica da 16 a 32
+        frameHeight: 48  // Modifica da 24 a 48
     });
 }
 
@@ -40,6 +40,8 @@ function create() {
 
     // Creazione del player
     player = this.physics.add.sprite(400, 300, 'player');
+    // Rimuovi o modifica questa linea
+    // player.setScale(2);
     player.setScale(2);
     player.setCollideWorldBounds(true);
 
