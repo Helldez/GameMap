@@ -21,6 +21,8 @@ const game = new Phaser.Game(config);
 
 let player;
 let cursors;
+let debugText;
+let lastLogTime = 0;
 
 function preload() {
     console.log('Preload function started');
@@ -28,21 +30,10 @@ function preload() {
     this.load.on('complete', () => console.log('All assets loaded'));
 
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
-    this.load.on('filecomplete-tilemapJSON-map', function() {
-        console.log('Map JSON loaded successfully');
-    });
-
     this.load.image('tiles', 'assets/tilesets/tileset3.png');
-    this.load.on('filecomplete-image-tiles', function() {
-        console.log('Tileset image loaded successfully');
-    });
-
     this.load.spritesheet('player', 'assets/sprites/player3.png', { 
         frameWidth: 16, 
         frameHeight: 24 
-    });
-    this.load.on('filecomplete-spritesheet-player', function() {
-        console.log('Player spritesheet loaded successfully');
     });
 }
 
@@ -52,17 +43,12 @@ function create() {
     console.log('Canvas size:', this.sys.game.canvas.width, this.sys.game.canvas.height);
 
     this.cameras.main.setBackgroundColor('#FFFFFF');
-    console.log('Background color set to white');
 
     try {
         const map = this.make.tilemap({ key: 'map' });
-        console.log('Tilemap created');
-        
         const tileset = map.addTilesetImage('tileset3', 'tiles');
-        console.log('Tileset added to map');
-        
         const layer = map.createLayer('Terrain', tileset, 0, 0);
-        console.log('Layer created:', layer);
+        console.log('Map and layers created successfully');
     } catch (error) {
         console.error('Error creating map:', error);
     }
@@ -70,10 +56,7 @@ function create() {
     try {
         player = this.physics.add.sprite(100, 150, 'player');
         player.setScale(2);
-        console.log('Player created:', player);
-
         player.setCollideWorldBounds(true);
-        console.log('Player collision with world bounds set');
 
         this.anims.create({
             key: 'left',
@@ -92,28 +75,26 @@ function create() {
             frameRate: 10,
             repeat: -1
         });
-        console.log('Player animations created');
+        console.log('Player created and animations set up');
     } catch (error) {
         console.error('Error setting up player:', error);
     }
 
     cursors = this.input.keyboard.createCursorKeys();
-    console.log('Cursor keys created');
 
     // Aggiungi un rettangolo rosso per test
     this.add.rectangle(400, 300, 100, 100, 0xFF0000);
-    console.log('Red rectangle added for testing');
 
     // Aggiungi del testo per ulteriore conferma visiva
     this.add.text(400, 200, 'Hello Phaser!', { fill: '#000000' }).setOrigin(0.5);
-    console.log('Test text added');
+
+    // Aggiungi il testo di debug
+    debugText = this.add.text(16, 16, '', { fontSize: '18px', fill: '#000' });
 
     console.log('Create function completed');
 }
 
-function update() {
-    console.log('Update called');
-
+function update(time) {
     if (!player) {
         console.warn('Player not initialized in update');
         return;
@@ -135,6 +116,15 @@ function update() {
         player.anims.play('turn');
     } else {
         player.anims.play('turn');
+    }
+
+    // Aggiorna il testo di debug con la posizione del giocatore
+    debugText.setText(`X: ${Math.round(player.x)}, Y: ${Math.round(player.y)}`);
+
+    // Log della posizione del giocatore ogni secondo
+    if (time - lastLogTime > 1000) {
+        console.log('Player position:', Math.round(player.x), Math.round(player.y));
+        lastLogTime = time;
     }
 }
 
