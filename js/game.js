@@ -1,13 +1,15 @@
+// main.js
+
+// Configurazione del gioco
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    pixelArt: true,
+    width: 640,   // 20 tile * 32 pixel
+    height: 480,  // 15 tile * 32 pixel
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 },
-            debug: false
+            gravity: { y: 0 },  // Nessuna gravità per un gioco top-down
+            debug: false        // Imposta true per vedere i riquadri di collisione
         }
     },
     scene: {
@@ -17,100 +19,118 @@ const config = {
     }
 };
 
+// Creazione dell'istanza del gioco
 const game = new Phaser.Game(config);
 
 let player;
 let cursors;
-let debugText;
+let worldLayer;
 
 function preload() {
-    console.log('Preload started');
-    this.load.on('complete', () => console.log('All assets loaded'));
-
-    this.load.image('tiles', 'https://github.com/Helldez/GameMap/blob/main/assets/tilesets/tileset3.png?raw=true');
-    this.load.spritesheet('player', 'assets/sprites/player3.png', { 
-        frameWidth: 64,  // Aumentato a 64 considerando le dimensioni maggiori
-        frameHeight: 96  // Aumentato a 96 considerando le dimensioni maggiori
-    });
+    // Caricamento delle risorse
+    this.load.image('tiles', 'assets/tilesets/tileset4.png');
     this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
+    this.load.spritesheet('player', 'assets/sprites/player4.png', {
+        frameWidth: 32,
+        frameHeight: 48
+    });
 }
 
 function create() {
-    console.log('Create started');
-    
-    try {
-        const map = this.make.tilemap({ key: 'map' });
-        console.log('Map created:', map);
-        
-        const tileset = map.addTilesetImage('tileset3', 'tiles');
-        console.log('Tileset added:', tileset);
-        
-        const layer = map.createStaticLayer('Terrain', tileset, 0, 0);
-        console.log('Layer created:', layer);
-        
-        player = this.physics.add.sprite(400, 300, 'player');
-        player.setScale(0.5);  // Scala il player per adattarlo allo schermo
-        console.log('Player created:', player);
-        
-        player.setCollideWorldBounds(true);
+    // Creazione della mappa
+    const map = this.make.tilemap({ key: 'map' });
 
-        this.anims.create({
-            key: 'left',
-            frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
-            frameRate: 10,
-            repeat: -1
-        });
-        this.anims.create({
-            key: 'turn',
-            frames: [{ key: 'player', frame: 4 }],
-            frameRate: 20
-        });
-        this.anims.create({
-            key: 'right',
-            frames: this.anims.generateFrameNumbers('player', { start: 5, end: 8 }),
-            frameRate: 10,
-            repeat: -1
-        });
+    // Aggiunta del tileset alla mappa
+    const tileset = map.addTilesetImage('tileset', 'tiles');
 
-        cursors = this.input.keyboard.createCursorKeys();
+    // Creazione dei layer
+    const worldLayer = map.createLayer('World', tileset, 0, 0);
 
-        // Configurazione della camera
-        this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
-        this.cameras.main.startFollow(player, true, 0.8, 0.8);
-        this.cameras.main.setZoom(1);  // Aggiusta lo zoom se necessario
+    // Impostazione delle collisioni in base alla proprietà 'collides'
+    worldLayer.setCollisionByProperty({ collides: true });
 
-        // Testo di debug
-        debugText = this.add.text(16, 16, '', { fontSize: '18px', fill: '#ffffff' })
-            .setScrollFactor(0)
-            .setDepth(1000);
+    // Creazione del player
+    player = this.physics.add.sprite(100, 100, 'player', 0);
 
-        console.log('Create completed');
-    } catch (error) {
-        console.error('Error in create function:', error);
-    }
+    // Impostazione delle collisioni tra il player e il mondo
+    this.physics.add.collider(player, worldLayer);
+
+    // Limiti della fotocamera
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // La fotocamera segue il player
+    this.cameras.main.startFollow(player);
+
+    // Limiti del mondo fisico
+    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+
+    // Il player non può uscire dai limiti del mondo
+    player.setCollideWorldBounds(true);
+
+    // Creazione delle animazioni del player
+    this.anims.create({
+        key: 'walk-down',
+        frames: this.anims.generateFrameNumbers('player', { start: 0, end: 3 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'walk-left',
+        frames: this.anims.generateFrameNumbers('player', { start: 4, end: 7 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'walk-right',
+        frames: this.anims.generateFrameNumbers('player', { start: 8, end: 11 }),
+        frameRate: 10,
+        repeat: -1
+    });
+    this.anims.create({
+        key: 'walk-up',
+        frames: this.anims.generateFrameNumbers('player', { start: 12, end: 15 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    // Input dalla tastiera
+    cursors = this.input.keyboard.createCursorKeys();
 }
 
 function update() {
-    if (!player) return;
+    const speed = 175;
+    const prevVelocity = player.body.velocity.clone();
 
-    player.setVelocity(0);
+    // Stop movimento precedente
+    player.body.setVelocity(0);
 
+    // Movimento orizzontale
     if (cursors.left.isDown) {
-        player.setVelocityX(-160);
-        player.anims.play('left', true);
+        player.body.setVelocityX(-speed);
     } else if (cursors.right.isDown) {
-        player.setVelocityX(160);
-        player.anims.play('right', true);
-    } else if (cursors.up.isDown) {
-        player.setVelocityY(-160);
-        player.anims.play('turn');
-    } else if (cursors.down.isDown) {
-        player.setVelocityY(160);
-        player.anims.play('turn');
-    } else {
-        player.anims.play('turn');
+        player.body.setVelocityX(speed);
     }
 
-    // Aggiorna il testo di debug con la posizione del player
-    debugText.setText(`Player - X: ${Math.round(player.x)}, Y: ${Math.round(player.y)}`);
+    // Movimento verticale
+    if (cursors.up.isDown) {
+        player.body.setVelocityY(-speed);
+    } else if (cursors.down.isDown) {
+        player.body.setVelocityY(speed);
+    }
+
+    // Normalizza la velocità per evitare velocità diagonali maggiori
+    player.body.velocity.normalize().scale(speed);
+
+    // Aggiornamento delle animazioni
+    if (cursors.left.isDown) {
+        player.anims.play('walk-left', true);
+    } else if (cursors.right.isDown) {
+        player.anims.play('walk-right', true);
+    } else if (cursors.up.isDown) {
+        player.anims.play('walk-up', true);
+    } else if (cursors.down.isDown) {
+        player.anims.play('walk-down', true);
+    } else {
+        player.anims.stop();
+    }
 }
