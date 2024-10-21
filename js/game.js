@@ -33,7 +33,7 @@ function preload() {
 function create() {
     // Creazione della mappa
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('tileset', 'tiles'); // Nome deve corrispondere a quello del JSON
+    const tileset = map.addTilesetImage('tileset3', 'tiles'); // Nome deve corrispondere a quello del JSON
     const layer = map.createLayer('Terrain', tileset, 0, 0); // Assicurati che il nome del layer corrisponda a quello nel JSON
 
     // Aggiunta del personaggio
@@ -86,5 +86,6 @@ function update() {
         player.anims.play('turn');
     }
 };
+
 
 
