@@ -37,8 +37,8 @@
         {
             "name": "tileset3",
             "image": "tileset3.png",
-            "imagewidth": 512,
-            "imageheight": 512,
+            "imagewidth": 1024,
+            "imageheight": 1024,
             "tilewidth": 32,
             "tileheight": 32
         }
