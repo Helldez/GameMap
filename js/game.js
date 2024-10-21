@@ -27,7 +27,7 @@ function preload() {
     console.log('Preload started');
     this.load.on('complete', () => console.log('All assets loaded'));
 
-    this.load.image('tiles', 'assets/tilesets/tileset3.png');
+    this.load.image('tiles', 'https://github.com/Helldez/GameMap/blob/main/assets/tilesets/tileset3.png?raw=true');
     this.load.spritesheet('player', 'assets/sprites/player3.png', { 
         frameWidth: 64,  // Aumentato a 64 considerando le dimensioni maggiori
         frameHeight: 96  // Aumentato a 96 considerando le dimensioni maggiori
