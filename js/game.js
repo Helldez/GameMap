@@ -1,4 +1,3 @@
-// game.js
 const config = {
     type: Phaser.AUTO,
     width: 800,
@@ -23,23 +22,23 @@ let player;
 let cursors;
 
 function preload() {
-    // Carichiamo una mappa e un tileset alternativi
-    this.load.tilemapTiledJSON('map', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/tilemaps/maps/super-mario.json');
-    this.load.image('tiles', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/tilemaps/tiles/super-mario.png');
-    
-    // Carichiamo uno sprite alternativo per il personaggio
-    this.load.spritesheet('player', 'https://raw.githubusercontent.com/photonstorm/phaser3-examples/master/public/assets/sprites/dude.png', { frameWidth: 32, frameHeight: 48 });
+    // Carica la mappa e il tileset aggiornato
+    this.load.tilemapTiledJSON('map', 'assets/maps/map.json'); // Sostituisci con il percorso del tuo file JSON
+    this.load.image('tiles', 'assets/tilesets/tileset2.png'); // Sostituisci con il percorso del tileset aggiornato
+
+    // Carica lo sprite aggiornato del personaggio
+    this.load.spritesheet('player', 'assets/sprites/player2.png', { frameWidth: 32, frameHeight: 48 }); // Dimensioni dello sprite
 }
 
 function create() {
-    // Creiamo la mappa
+    // Creazione della mappa
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('SuperMarioBros-World1-1', 'tiles');
-    const layer = map.createLayer('World1', tileset, 0, 0);
-    
-    // Aggiungiamo il personaggio
+    const tileset = map.addTilesetImage('tileset2', 'tiles'); // Nome deve corrispondere a quello del JSON
+    const layer = map.createLayer('Tile Layer 1', tileset, 0, 0); // Assicurati che il nome del layer corrisponda a quello nel JSON
+
+    // Aggiunta del personaggio
     player = this.physics.add.sprite(100, 150, 'player');
-    
+
     // Anima il personaggio
     this.anims.create({
         key: 'left',
@@ -58,7 +57,7 @@ function create() {
         frameRate: 10,
         repeat: -1
     });
-    
+
     // Imposta i controlli della tastiera
     cursors = this.input.keyboard.createCursorKeys();
 }
@@ -66,7 +65,7 @@ function create() {
 function update() {
     // Resetta la velocità
     player.setVelocity(0);
-    
+
     // Controlla l'input e muovi il personaggio
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
@@ -86,4 +85,5 @@ function update() {
     } else {
         player.anims.play('turn');
     }
-}
+};
+
