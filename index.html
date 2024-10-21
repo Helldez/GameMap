@@ -1,8 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- ... altri tag head ... -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phaser Game</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #game-container {
+            position: relative;
+        }
         #debugLog {
             position: absolute;
             top: 10px;
@@ -16,7 +30,10 @@
     </style>
 </head>
 <body>
-    <div id="debugLog"></div>
+    <div id="game-container">
+        <div id="debugLog"></div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="js/game.js"></script>
     <script>

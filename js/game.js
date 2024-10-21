@@ -2,12 +2,13 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    parent: 'game-container',  // Aggiungi questa linea
     pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: false
         }
     },
     scene: {
