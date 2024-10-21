@@ -1,6 +1,6 @@
 {
     "height": 20,
-    "width": 20,
+    "width": 15,
     "tilewidth": 32,
     "tileheight": 32,
     "layers": [
@@ -37,10 +37,10 @@
         {
             "name": "tileset3",
             "image": "tileset3.png",
+            "imagewidth": 512,
+            "imageheight": 512,
             "tilewidth": 32,
-            "tileheight": 32,
-            "tilecount": 128,
-            "columns": 16
+            "tileheight": 32
         }
     ]
 }
