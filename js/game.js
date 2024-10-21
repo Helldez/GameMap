@@ -7,7 +7,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: true
+            debug: true // Abilita il debug
         }
     },
     scene: {
@@ -18,25 +18,36 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+
 let player;
 let cursors;
 
 function preload() {
-    // Carica la mappa e il tileset aggiornato
-    this.load.tilemapTiledJSON('map', 'assets/maps/map.json'); // Sostituisci con il percorso del tuo file JSON
-    this.load.image('tiles', 'assets/tilesets/tileset3.png'); // Sostituisci con il percorso del tileset aggiornato 
+    console.log('Preload function started');
+    this.load.on('complete', () => console.log('All assets loaded'));
 
-    // Carica lo sprite aggiornato del personaggio
-    this.load.spritesheet('player', 'assets/sprites/player3.png', { frameWidth: 16, frameHeight: 24 }); // Aggiusta queste dimensioni in base all'immagine reale} /workspaces/GameMap/assets/sprites/player3..png
+    // Carica la mappa e il tileset
+    this.load.tilemapTiledJSON('map', 'assets/maps/map.json');
+    this.load.image('tiles', 'assets/tilesets/tileset3.png');
+    
+    // Carica lo sprite del personaggio
+    this.load.spritesheet('player', 'assets/sprites/player3.png', { 
+        frameWidth: 16, 
+        frameHeight: 24 
+    });
+}
 
 function create() {
+    console.log('Create function started');
+
     // Creazione della mappa
     const map = this.make.tilemap({ key: 'map' });
-    const tileset = map.addTilesetImage('tileset3', 'tiles'); // Nome deve corrispondere a quello del JSON
-    const layer = map.createLayer('Terrain', tileset, 0, 0); // Assicurati che il nome del layer corrisponda a quello nel JSON
+    const tileset = map.addTilesetImage('tileset3', 'tiles');
+    const layer = map.createLayer('Terrain', tileset, 0, 0);
 
     // Aggiunta del personaggio
     player = this.physics.add.sprite(100, 150, 'player');
+    player.setScale(2); // Scala il player per compensare le dimensioni ridotte
 
     // Anima il personaggio
     this.anims.create({
@@ -59,6 +70,9 @@ function create() {
 
     // Imposta i controlli della tastiera
     cursors = this.input.keyboard.createCursorKeys();
+
+    // Aggiungi collisione con i bordi del mondo
+    player.setCollideWorldBounds(true);
 }
 
 function update() {
@@ -69,22 +83,16 @@ function update() {
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.anims.play('left', true);
-    }
-    else if (cursors.right.isDown) {
+    } else if (cursors.right.isDown) {
         player.setVelocityX(160);
         player.anims.play('right', true);
-    }
-    else if (cursors.up.isDown) {
+    } else if (cursors.up.isDown) {
         player.setVelocityY(-160);
         player.anims.play('turn');
-    }
-    else if (cursors.down.isDown) {
+    } else if (cursors.down.isDown) {
         player.setVelocityY(160);
         player.anims.play('turn');
     } else {
         player.anims.play('turn');
     }
-};
-
-
-
+}
